@@ -28,6 +28,10 @@ public class TaskController {
 
 	@PostMapping("/tasks")
 	public ResponseEntity<AddResponse> createTask(@RequestBody Task task) {
+		if (!task.statusIsValid()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Status must be 'Pending', 'In progress' or 'Completed'");
+		}
+		
 		task.setId((int) counter.incrementAndGet());
 		repository.save(task);
 		
@@ -54,6 +58,10 @@ public class TaskController {
 
 	@PutMapping("/tasks/{id}")
 	public Task updateTask(@PathVariable(value="id") int id, @RequestBody Task task) {
+		if (!task.statusIsValid()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Status must be 'Pending', 'In progress' or 'Completed'");
+		}
+		
 		try {
 			Task existingTask = repository.findById(id).get();
 			existingTask.setTitle(task.getTitle());

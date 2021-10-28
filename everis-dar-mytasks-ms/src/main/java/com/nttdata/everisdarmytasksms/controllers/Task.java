@@ -50,4 +50,8 @@ public class Task {
 		this.status = status;
 	}
 
+	public boolean statusIsValid() {
+		return (status.equals("Pending") || status.equals("In progress") || status.equals("Completed"));
+	}
+
 }
