@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,20 @@ public class TaskController {
 	@GetMapping("/tasks/searchByStatus")
 	public List<Task> getTasksByStatus(@RequestParam(value="status") String status) {
 		return repository.findAllByStatus(status);
+	}
+
+	@PutMapping("/tasks/{id}")
+	public Task updateTask(@PathVariable(value="id") int id, @RequestBody Task task) {
+		try {
+			Task existingTask = repository.findById(id).get();
+			existingTask.setTitle(task.getTitle());
+			existingTask.setDescription(task.getDescription());
+			existingTask.setStatus(task.getStatus());
+			repository.save(existingTask);
+			return existingTask;
+		} catch(Exception e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
+		}
 	}
 
 }
