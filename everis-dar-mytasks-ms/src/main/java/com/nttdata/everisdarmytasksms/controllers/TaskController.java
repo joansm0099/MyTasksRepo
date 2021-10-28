@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +32,7 @@ public class TaskController {
 		repository.save(task);
 		
 		AddResponse resp = new AddResponse();
-		resp.setMsg("Task is succesfully added");
+		resp.setMessage("Task added succesfully");
 		resp.setId(task.getId());
 		return new ResponseEntity<AddResponse>(resp, HttpStatus.CREATED);
 	}
@@ -60,6 +61,19 @@ public class TaskController {
 			existingTask.setStatus(task.getStatus());
 			repository.save(existingTask);
 			return existingTask;
+		} catch(Exception e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
+		}
+	}
+
+	@DeleteMapping("/tasks/{id}")
+	public ResponseEntity<DeleteResponse> deleteTask(@PathVariable(value="id") int id) {
+		try {
+			repository.deleteById(id);
+			
+			DeleteResponse resp = new DeleteResponse();
+			resp.setMessage("Task deleted");
+			return new ResponseEntity<DeleteResponse>(resp, HttpStatus.OK);
 		} catch(Exception e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
 		}
