@@ -31,6 +31,9 @@ public class TaskController {
 		if (!task.statusIsValid()) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Status must be 'Pending', 'In progress' or 'Completed'");
 		}
+		if (task.getDescription().length() > 256) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Description must have a maximum size of 256 characters");
+		}
 		
 		task.setId((int) counter.incrementAndGet());
 		repository.save(task);
@@ -39,6 +42,11 @@ public class TaskController {
 		resp.setMessage("Task added succesfully");
 		resp.setId(task.getId());
 		return new ResponseEntity<AddResponse>(resp, HttpStatus.CREATED);
+	}
+
+	@GetMapping("/tasks")
+	public List<Task> getAllTasks() {
+		return repository.findAll();
 	}
 
 	@GetMapping("/tasks/{id}")
@@ -58,20 +66,25 @@ public class TaskController {
 
 	@PutMapping("/tasks/{id}")
 	public Task updateTask(@PathVariable(value="id") int id, @RequestBody Task task) {
-		if (!task.statusIsValid()) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT, "Status must be 'Pending', 'In progress' or 'Completed'");
-		}
+		Task existingTask;
 		
 		try {
-			Task existingTask = repository.findById(id).get();
-			existingTask.setTitle(task.getTitle());
-			existingTask.setDescription(task.getDescription());
-			existingTask.setStatus(task.getStatus());
-			repository.save(existingTask);
-			return existingTask;
+			existingTask = repository.findById(id).get();
 		} catch(Exception e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
 		}
+		
+		if (!task.statusIsValid()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Status must be 'Pending', 'In progress' or 'Completed'");
+		}
+		if (task.getDescription().length() > 256) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Description must have a maximum size of 256 characters");
+		}
+		existingTask.setTitle(task.getTitle());
+		existingTask.setDescription(task.getDescription());
+		existingTask.setStatus(task.getStatus());
+		repository.save(existingTask);
+		return existingTask;
 	}
 
 	@DeleteMapping("/tasks/{id}")
