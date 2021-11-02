@@ -1,4 +1,4 @@
-package com.nttdata.everisdarmytasksms.controllers;
+package com.nttdata.everisdarmytasksms.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +20,7 @@ public class Task {
 	private String description;
 
 	@Column(name="status")
-	private String status;
+	private Status status;
 
 	public int getId() {
 		return id;
@@ -43,15 +43,11 @@ public class Task {
 		this.description = description;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
-	}
-
-	public boolean statusIsValid() {
-		return (status.equals("Pending") || status.equals("In progress") || status.equals("Completed"));
 	}
 
 }

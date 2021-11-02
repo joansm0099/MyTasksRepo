@@ -1,6 +1,6 @@
 package com.nttdata.everisdarmytasksms.controllers;
 
-public class DeleteResponse {
+public class MsgResponse {
 
 	private String message;
 

@@ -20,15 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nttdata.everisdarmytasksms.controllers.AddResponse;
-import com.nttdata.everisdarmytasksms.controllers.Task;
 import com.nttdata.everisdarmytasksms.controllers.TaskController;
+import com.nttdata.everisdarmytasksms.model.Status;
+import com.nttdata.everisdarmytasksms.model.Task;
 import com.nttdata.everisdarmytasksms.repositories.TaskRepository;
 
 @SpringBootTest
@@ -49,22 +48,12 @@ class EverisDarMytasksMsApplicationTests {
 	}
 
 	@Test
-	public void testStatusIsValid() {
-		Task t = new Task();
-		t.setStatus("Completed");
-		boolean result = t.statusIsValid();
-		assertTrue(result);
-	}
-
-	@Test
 	public void testCreateTask() {
 		Task t = buildTask();
 		when(repository.save(any())).thenReturn(t);
-		ResponseEntity<AddResponse> response = controller.createTask(t);
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		AddResponse body = (AddResponse) response.getBody();
-		assertEquals("Task added succesfully", body.getMessage());
-		assertEquals(t.getId(), body.getId());
+		AddResponse response = controller.createTask(t);
+		assertEquals("Task added succesfully", response.getMessage());
+		assertEquals(t.getId(), response.getId());
 	}
 	
 	@Test
@@ -108,7 +97,7 @@ class EverisDarMytasksMsApplicationTests {
 		tasksFound.add(buildTask());
 		when(repository.findAllByStatus(any())).thenReturn(tasksFound);
 		
-		this.mockMvc.perform(get("/tasks/searchByStatus").param("status", "Pending"))
+		this.mockMvc.perform(get("/tasks/searchByStatus").param("status", Status.PENDING.toString()))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.length()").value(1))
 		.andExpect(jsonPath("$.[0].id").value(tasksFound.get(0).getId()));
@@ -119,14 +108,14 @@ class EverisDarMytasksMsApplicationTests {
 		Task t = buildTask();
 		when(repository.findById(t.getId())).thenReturn(Optional.of(t));
 		
-		t.setStatus("In progress");
+		t.setStatus(Status.IN_PROGRESS);
 		ObjectMapper map = new ObjectMapper();
 		String json = map.writeValueAsString(t);
 		
 		this.mockMvc.perform(put("/tasks/"+t.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.id").value(t.getId()))
-		.andExpect(jsonPath("$.status").value("In progress"));
+		.andExpect(jsonPath("$.status").value(Status.IN_PROGRESS.toString()));
 	}
 
 	@Test
@@ -145,7 +134,7 @@ class EverisDarMytasksMsApplicationTests {
 		t.setId(3);
 		t.setTitle("Task for unit testing");
 		t.setDescription("Testing with JUnit");
-		t.setStatus("Pending");
+		t.setStatus(Status.PENDING);
 		return t;
 	}
 
