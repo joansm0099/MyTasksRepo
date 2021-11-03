@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: everis-dar-mytasks-ms
-          path: '${{ github.workspace }}/target/*.jar'
+          path: '${{ github.workspace }}/everis-dar-mytasks-ms/target/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
