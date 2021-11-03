@@ -28,7 +28,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: java-app
+          name: everis-dar-mytasks-ms
           path: '${{ github.workspace }}/target/*.jar'
 
   deploy:
@@ -42,7 +42,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: java-app
+          name: everis-dar-mytasks-ms
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
