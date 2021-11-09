@@ -2,7 +2,6 @@ package com.nttdata.everisdarmytasksms.controllers;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +30,6 @@ import com.nttdata.everisdarmytasksms.repositories.TaskRepository;
 @CrossOrigin(origins = "*")
 public class TaskController {
 
-	private AtomicLong counter = new AtomicLong();
-
 	private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
 	
 	@Autowired
@@ -46,7 +43,6 @@ public class TaskController {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Description must have a maximum size of 256 characters");
 		}
 		
-		task.setId((int) counter.incrementAndGet());
 		repository.save(task);
 		
 		AddResponse resp = new AddResponse();
